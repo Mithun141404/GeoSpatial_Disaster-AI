@@ -1,0 +1,9 @@
+
+{
+  "name": "DisasterAI - Multimodal Geospatial Intelligence",
+  "description": "A production-ready system for disaster assessment using SamGeo, LLaVA, and PostGIS for advanced geospatial reasoning and segmentation.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
