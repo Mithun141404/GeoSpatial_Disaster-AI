@@ -4,7 +4,7 @@
 
 # 🛰️ DisasterAI - Multimodal Geospatial Intelligence
 
-> AI-powered multimodal analysis for disaster response, infrastructure monitoring, and geospatial intelligence synthesis.
+> AI-powered multimodal analysis for disaster response, infrastructure monitoring, and comprehensive geospatial intelligence synthesis. Real-time monitoring for all types of disasters including earthquakes, floods, wildfires, hurricanes, tsunamis, volcanic eruptions, droughts, landslides, cyclones, and more.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com)
@@ -121,6 +121,36 @@ Once the backend is running, visit **http://localhost:8000/docs** for interactiv
 | `POST` | `/api/geocode` | Geocode location name |
 | `POST` | `/api/ner` | Extract named entities |
 
+### Disaster Monitoring Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/disasters/types` | Get all supported disaster types |
+| `GET` | `/api/disasters/active` | Get currently active disasters |
+| `GET` | `/api/disasters/historical` | Get historical disasters |
+| `GET` | `/api/disasters/location/{location}` | Get disaster timeline for a location |
+| `GET` | `/api/disasters/stats` | Get disaster statistics and summaries |
+| `POST` | `/api/disasters/subscribe` | Subscribe to alerts for an area |
+| `POST` | `/api/disasters/unsubscribe` | Unsubscribe from alerts for an area |
+
+### Alerting Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/alerts/active` | Get active alerts |
+| `GET` | `/api/alerts/sent` | Get sent alerts |
+| `GET` | `/api/alerts/{alert_id}` | Get status of specific alert |
+| `POST` | `/api/alerts/{alert_id}/acknowledge` | Acknowledge receipt of an alert |
+| `GET` | `/api/alerts/channels` | Get available alert channels |
+| `GET` | `/api/alerts/priorities` | Get available alert priorities |
+| `GET` | `/api/alerts/stats` | Get alert statistics |
+
+### Real-time Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `WS` | `/api/ws` | WebSocket for real-time disaster monitoring |
+
 ### Example: Analyze Document
 
 ```bash
@@ -181,6 +211,14 @@ curl -X POST "http://localhost:8000/api/ner" \
 - **Health Checks** - Detailed service availability verification
 - **Security & Validation** - Enhanced input validation and secure coding practices
 
+### Real-time Disaster Monitoring
+- **Multi-Hazard Detection** - AI-powered detection of earthquakes, floods, wildfires, hurricanes, tsunamis, volcanic eruptions, droughts, landslides, and more
+- **Real-time Alerts** - Multi-channel alerting system (email, SMS, push notifications, webhooks)
+- **WebSocket Integration** - Live streaming of disaster events and alerts
+- **Subscription System** - Area-based alert subscriptions for targeted notifications
+- **Historical Tracking** - Comprehensive database of past disaster events
+- **Risk Assessment** - Multi-tiered alert levels (Green, Yellow, Orange, Red, Black)
+
 ### Frontend
 - **React 19** - Modern UI framework
 - **Vite** - Next-gen build tool
@@ -202,6 +240,10 @@ curl -X POST "http://localhost:8000/api/ner" \
 | Task Queue | ✅ Complete |
 | Database Persistence | ✅ Complete |
 | Logging & Monitoring | ✅ Complete |
+| Real-time Disaster Monitoring | ✅ Complete |
+| Multi-Hazard Detection | ✅ Complete |
+| Alerting System | ✅ Complete |
+| WebSocket Integration | ✅ Complete |
 | Production Deploy | 🔄 Planned |
 
 ---

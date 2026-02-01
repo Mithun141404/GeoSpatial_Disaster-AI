@@ -15,8 +15,9 @@ import logging
 
 from google import genai
 from google.genai.types import Part, Content, GenerateContentConfig, Tool, GoogleSearch
+from google.genai.types import HarmCategory, HarmBlockThreshold
 
-from ..models import (
+from models import (
     AnalysisResult,
     AnalysisRequest,
     GeoJSONFeatureCollection,
@@ -27,8 +28,10 @@ from ..models import (
     EntityLabel,
     SeverityLevel
 )
-from ..config import settings
-from ..logging_config import get_logger
+from config import settings
+from logging_config import get_logger
+from services.disaster_service import get_disaster_service
+from services.alert_service import get_alert_service
 
 
 class GeminiAnalysisService:
@@ -419,6 +422,37 @@ Always return valid, parseable JSON. Never include markdown formatting."""
                     'feature_count': len(result.geospatialData.features)
                 }
             )
+
+            # Trigger disaster detection if enabled
+            if request.include_geocoding:  # Use the include_geocoding flag to determine if disaster detection should run
+                try:
+                    disaster_service = get_disaster_service()
+                    detected_events = await disaster_service.detect_disaster_from_analysis(result)
+
+                    if detected_events:
+                        self.logger.info(
+                            f"Detected {len(detected_events)} potential disaster events",
+                            extra={
+                                'task_id': task_id,
+                                'event_count': len(detected_events),
+                                'events': [e.disaster_type.value for e in detected_events]
+                            }
+                        )
+
+                        # Create alerts for significant events
+                        alert_service = get_alert_service()
+                        for event in detected_events:
+                            if event.alert_level in ['red', 'black', 'orange']:  # High severity events
+                                await alert_service.process_new_disaster_event(event)
+                except Exception as e:
+                    self.logger.error(
+                        f"Error in disaster detection post-processing: {str(e)}",
+                        extra={
+                            'task_id': task_id,
+                            'error': str(e),
+                            'traceback': traceback.format_exc()
+                        }
+                    )
 
             return result
 

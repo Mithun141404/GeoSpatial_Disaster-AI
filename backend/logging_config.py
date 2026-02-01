@@ -10,7 +10,7 @@ from typing import Optional
 from pathlib import Path
 import json
 
-from .config import settings
+from config import settings
 
 
 class JSONFormatter(logging.Formatter):

@@ -12,7 +12,7 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ..models import (
+from models import (
     GeocodingResult,
     BatchGeocodingResult,
     GeoJSONGeometry,
@@ -20,7 +20,7 @@ from ..models import (
     GeoJSONProperties,
     SeverityLevel
 )
-from ..config import settings
+from config import settings
 
 
 class GeocodingService:

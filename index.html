@@ -1,164 +1,180 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DisasterAI | Geospatial Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              border: "hsl(var(--border))",
-              input: "hsl(var(--input))",
-              ring: "hsl(var(--ring))",
-              background: "hsl(var(--background))",
-              foreground: "hsl(var(--foreground))",
-              primary: {
-                DEFAULT: "hsl(var(--primary))",
-                foreground: "hsl(var(--primary-foreground))",
-              },
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DisasterAI | Geospatial Intelligence</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
           }
         }
       }
-    </script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-          --background: 0 0% 100%;
-          --foreground: 222.2 84% 4.9%;
-          --primary: 221.2 83.2% 53.3%;
-          --primary-foreground: 210 40% 98%;
-          --border: 214.3 31.8% 91.4%;
-          --muted-foreground: 215.4 16.3% 46.9%;
-          --destructive: 0 84.2% 60.2%;
-          --success: 142 76% 36%;
-          --success-foreground: 144 100% 97%;
-        }
+    }
+  </script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        .dark {
-          --background: 222.2 84% 4.9%;
-          --foreground: 210 40% 98%;
-          --primary: 217.2 91.2% 59.8%;
-          --primary-foreground: 222.2 47.4% 11.2%;
-          --border: 217.2 32.6% 17.5%;
-          --muted-foreground: 215 20.2% 65.1%;
-          --destructive: 0 62.8% 30.6%;
-          --success: 142 70% 45%;
-          --success-foreground: 144 100% 97%;
-        }
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --primary: 221.2 83.2% 53.3%;
+      --primary-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --destructive: 0 84.2% 60.2%;
+      --success: 142 76% 36%;
+      --success-foreground: 144 100% 97%;
+    }
 
-        body { 
-          font-family: 'Inter', sans-serif; 
-          margin: 0; 
-          overflow: hidden;
-          transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        .leaflet-container { 
-          height: 100%; 
-          width: 100%; 
-        }
+    .dark {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --border: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --destructive: 0 62.8% 30.6%;
+      --success: 142 70% 45%;
+      --success-foreground: 144 100% 97%;
+    }
 
-        .leaflet-tooltip {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            pointer-events: auto !important;
-            cursor: default;
-        }
-        
-        .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, 
-        .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
-            display: none !important;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      overflow: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-        .hover-glow {
-            filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.6));
-            transition: filter 0.2s ease-in-out;
-        }
-        
-        .leaflet-interactive {
-            transition: stroke-width 0.2s ease, stroke 0.2s ease, fill-opacity 0.2s ease;
-        }
+    .leaflet-container {
+      height: 100%;
+      width: 100%;
+    }
 
-        @keyframes pop-in {
-          0% {
-            transform: scale(0.6);
-            opacity: 0;
-          }
-          60% {
-            transform: scale(1.1);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
+    .leaflet-tooltip {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      pointer-events: auto !important;
+      cursor: default;
+    }
 
-        @keyframes loaderAnim {
-          0% {
-            inset: 0 35px 35px 0;
-          }
-          12.5% {
-            inset: 0 35px 0 0;
-          }
-          25% {
-            inset: 35px 35px 0 0;
-          }
-          37.5% {
-            inset: 35px 0 0 0;
-          }
-          50% {
-            inset: 35px 0 0 35px;
-          }
-          62.5% {
-            inset: 0 0 0 35px;
-          }
-          75% {
-            inset: 0 0 35px 35px;
-          }
-          87.5% {
-            inset: 0 0 35px 0;
-          }
-          100% {
-            inset: 0 35px 35px 0;
-          }
-        }
+    .leaflet-tooltip-top:before,
+    .leaflet-tooltip-bottom:before,
+    .leaflet-tooltip-left:before,
+    .leaflet-tooltip-right:before {
+      display: none !important;
+    }
 
-        .animate-loaderAnim {
-          animation: loaderAnim 2.5s infinite;
-        }
-        
-        .animation-delay {
-          animation-delay: -1.25s;
-        }
+    .hover-glow {
+      filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.6));
+      transition: filter 0.2s ease-in-out;
+    }
 
-        .animate-pop-in {
-          animation: pop-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+    .leaflet-interactive {
+      transition: stroke-width 0.2s ease, stroke 0.2s ease, fill-opacity 0.2s ease;
+    }
 
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 10px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-          background: #334155;
-        }
-    </style>
-<script type="importmap">
+    @keyframes pop-in {
+      0% {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes loaderAnim {
+      0% {
+        inset: 0 35px 35px 0;
+      }
+
+      12.5% {
+        inset: 0 35px 0 0;
+      }
+
+      25% {
+        inset: 35px 35px 0 0;
+      }
+
+      37.5% {
+        inset: 35px 0 0 0;
+      }
+
+      50% {
+        inset: 35px 0 0 35px;
+      }
+
+      62.5% {
+        inset: 0 0 0 35px;
+      }
+
+      75% {
+        inset: 0 0 35px 35px;
+      }
+
+      87.5% {
+        inset: 0 0 35px 0;
+      }
+
+      100% {
+        inset: 0 35px 35px 0;
+      }
+    }
+
+    .animate-loaderAnim {
+      animation: loaderAnim 2.5s infinite;
+    }
+
+    .animation-delay {
+      animation-delay: -1.25s;
+    }
+
+    .animate-pop-in {
+      animation: pop-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+  </style>
+  <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
@@ -178,10 +194,11 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
+
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-    <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

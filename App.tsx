@@ -5,9 +5,10 @@ import { FileUpload } from './components/FileUpload';
 import { AnalysisPanel } from './components/AnalysisPanel';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { DisasterDashboard } from './components/DisasterDashboard';
 import { AnalysisResult } from './types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map, BarChart3, Settings, Trash2, Shield, Info, Home } from 'lucide-react';
+import { Map, BarChart3, Settings, Trash2, Shield, Info, Home, AlertTriangle } from 'lucide-react';
 import { LumaSpin } from './components/ui/luma-spin';
 
 const App: React.FC = () => {
@@ -15,7 +16,7 @@ const App: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isProcessing, setIsProcessing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [activeTab, setActiveTab] = useState<'map' | 'analysis'>('map');
+  const [activeTab, setActiveTab] = useState<'map' | 'analysis' | 'disasters'>('disasters');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -38,12 +39,18 @@ const App: React.FC = () => {
 
   const links = [
     {
-      label: "Geo Explorer",
+      label: "Disaster Monitor",
+      href: "#",
+      icon: <AlertTriangle className="w-5 h-5 flex-shrink-0" />,
+      onClick: () => setActiveTab('disasters'),
+      active: activeTab === 'disasters',
+    },
+    {
+      label: "Upload & Analyze",
       href: "#",
       icon: <Map className="w-5 h-5 flex-shrink-0" />,
       onClick: () => setActiveTab('map'),
       active: activeTab === 'map',
-      disabled: !analysisResult
     },
     {
       label: "AI Reasoning",
@@ -84,7 +91,7 @@ const App: React.FC = () => {
             className="flex flex-col h-full w-full"
           >
             <Header theme={theme} onThemeToggle={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />
-            
+
             <main className="flex flex-1 overflow-hidden relative bg-transparent">
               <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
                 <SidebarBody className="justify-between gap-10 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
@@ -94,16 +101,16 @@ const App: React.FC = () => {
                         <Shield className="text-white w-5 h-5" />
                       </div>
                       {sidebarOpen && (
-                        <motion.span 
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 1 }} 
+                        <motion.span
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
                           className="font-black text-xs uppercase tracking-widest text-slate-900 dark:text-white"
                         >
                           Intel Hub
                         </motion.span>
                       )}
                     </div>
-                    
+
                     <div className="flex flex-col gap-2">
                       {links.map((link, idx) => (
                         <SidebarLink key={idx} link={link} active={(link as any).active} />
@@ -132,7 +139,7 @@ const App: React.FC = () => {
                       }}
                     />
                     {sidebarOpen && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className="mt-4 p-4 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700"
@@ -150,13 +157,23 @@ const App: React.FC = () => {
                   </div>
                 </SidebarBody>
               </Sidebar>
-              
+
               <div className="flex-1 relative p-4 flex gap-4 overflow-hidden">
                 <div className="flex-1 h-full relative overflow-hidden bg-white/50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800/50">
                   <AnimatePresence mode="wait">
-                    {analysisResult ? (
+                    {activeTab === 'disasters' ? (
+                      <motion.div
+                        key="disasters"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        className="w-full h-full"
+                      >
+                        <DisasterDashboard />
+                      </motion.div>
+                    ) : analysisResult ? (
                       activeTab === 'map' ? (
-                        <motion.div 
+                        <motion.div
                           key="map"
                           initial={{ opacity: 0, scale: 0.98 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -166,7 +183,7 @@ const App: React.FC = () => {
                           <MapViewer analysisResult={analysisResult} theme={theme} />
                         </motion.div>
                       ) : (
-                        <motion.div 
+                        <motion.div
                           key="analysis"
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -179,8 +196,8 @@ const App: React.FC = () => {
                     ) : null}
                   </AnimatePresence>
 
-                  {!analysisResult && !isProcessing && (
-                    <motion.div 
+                  {!analysisResult && !isProcessing && activeTab !== 'disasters' && (
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="absolute inset-0 flex items-center justify-center bg-white/40 dark:bg-slate-950/40 backdrop-blur-md z-[50] rounded-2xl pointer-events-auto"
@@ -190,23 +207,23 @@ const App: React.FC = () => {
                   )}
 
                   {isProcessing && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl z-[60] rounded-2xl space-y-10"
                     >
                       <LumaSpin />
-                      
+
                       <div className="text-center">
                         <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">Synthesizing Geospatial Intelligence</h3>
                         <div className="flex flex-col space-y-1.5 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">
                           <span className="flex items-center justify-center gap-2">
-                             <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
-                             Mapping Segment Topology
+                            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
+                            Mapping Segment Topology
                           </span>
                           <span className="flex items-center justify-center gap-2">
-                             <div className="w-1 h-1 bg-indigo-500 rounded-full animate-pulse delay-75"></div>
-                             Extracting Multi-Lingual NER
+                            <div className="w-1 h-1 bg-indigo-500 rounded-full animate-pulse delay-75"></div>
+                            Extracting Multi-Lingual NER
                           </span>
                         </div>
                       </div>

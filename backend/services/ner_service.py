@@ -5,7 +5,7 @@ Named Entity Recognition for extracting locations, organizations, and other enti
 
 import re
 from typing import List, Optional, Set
-from ..models import ExtractedEntity, EntityLabel, NERResult
+from models import ExtractedEntity, EntityLabel, NERResult
 import time
 
 

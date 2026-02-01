@@ -218,6 +218,96 @@ class ServiceStatus(BaseModel):
 
 
 # ============================================================================
+# DISASTER MONITORING ENUMS
+# ============================================================================
+
+class DisasterType(str, Enum):
+    """Types of disasters that can be monitored"""
+    EARTHQUAKE = "earthquake"
+    FLOOD = "flood"
+    WILDFIRE = "wildfire"
+    HURRICANE = "hurricane"
+    TORNADO = "tornado"
+    TSUNAMI = "tsunami"
+    VOLCANIC = "volcanic"
+    DROUGHT = "drought"
+    STORM = "storm"
+    LANDSLIDE = "landslide"
+    CYCLONE = "cyclone"
+    TYPHOON = "typhoon"
+    BLIZZARD = "blizzard"
+    HEAT_WAVE = "heat_wave"
+    COLD_WAVE = "cold_wave"
+    AIR_QUALITY = "air_quality"
+    OTHER = "other"
+
+
+class AlertLevel(str, Enum):
+    """Alert levels for disaster warnings"""
+    GREEN = "green"      # No threat
+    YELLOW = "yellow"    # Watch/warning
+    ORANGE = "orange"    # Advisory
+    RED = "red"          # Warning
+    BLACK = "black"      # Emergency
+
+
+class AlertChannel(str, Enum):
+    """Channels for sending alerts"""
+    EMAIL = "email"
+    SMS = "sms"
+    PUSH = "push"
+    WEBHOOK = "webhook"
+    MOBILE_PUSH = "mobile_push"
+
+
+class AlertPriority(int, Enum):
+    """Priority levels for alerts"""
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+
+# ============================================================================
+# DISASTER MONITORING MODELS
+# ============================================================================
+
+class DisasterEvent(BaseModel):
+    """Model for a disaster event"""
+    event_id: str
+    disaster_type: DisasterType
+    magnitude: Optional[float] = None
+    intensity: Optional[str] = None
+    location: str
+    coordinates: List[float]  # [longitude, latitude]
+    timestamp: datetime
+    alert_level: AlertLevel
+    affected_area: Optional[str] = None
+    casualties: Optional[Dict[str, int]] = None  # deaths, injuries, missing
+    economic_impact: Optional[Dict[str, Any]] = None  # monetary losses
+    description: str = ""
+    source: str = "AI_analysis"
+    status: str = "active"  # active, ongoing, concluded, false_alarm
+
+
+class AlertMessage(BaseModel):
+    """Model for an alert message"""
+    alert_id: str
+    event_id: str
+    disaster_type: DisasterType
+    location: str
+    coordinates: List[float]  # [longitude, latitude]
+    alert_level: AlertLevel
+    priority: AlertPriority
+    message: str
+    timestamp: datetime
+    channels: List[AlertChannel]
+    recipients: List[str]
+    acknowledged: bool = False
+    acknowledged_at: Optional[datetime] = None
+
+
+# ============================================================================
 # CONFIGURATION MODELS
 # ============================================================================
 

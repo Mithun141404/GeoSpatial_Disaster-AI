@@ -12,7 +12,7 @@ from typing import Generator, Optional
 import json
 from datetime import datetime
 
-from .models import TaskDB, TaskStatus, AnalysisRequest, AnalysisResult
+from models import TaskDB, TaskStatus, AnalysisRequest, AnalysisResult
 
 # Database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./disasterai_tasks.db"

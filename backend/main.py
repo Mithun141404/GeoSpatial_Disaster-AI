@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
 
-from .models import (
+from models import (
     AnalysisRequest,
     AnalysisResult,
     AnalysisResponse,
@@ -34,14 +34,14 @@ from .models import (
     NERResult,
     AnalysisConfig
 )
-from .config import settings, validate_settings
-from .tasks import (
+from config import settings, validate_settings
+from tasks import (
     create_analysis_task,
     get_task_status,
     cancel_analysis_task,
     task_store
 )
-from .logging_config import get_logger, log_api_call, log_task_event
+from logging_config import get_logger, log_api_call, log_task_event
 
 
 # ============================================================================
@@ -244,7 +244,7 @@ async def health_check():
 
     # Perform actual database connectivity check
     try:
-        from .db import get_db_session
+        from db import get_db_session
         with get_db_session() as db:
             # Try to query something simple
             db.execute("SELECT 1")
@@ -315,7 +315,7 @@ async def analyze_document(request: AnalysisRequest):
     )
 
     try:
-        from .services.gemini_service import get_gemini_service
+        from services.gemini_service import get_gemini_service
 
         service = get_gemini_service()
         result = await service.analyze_document(request)
@@ -446,7 +446,7 @@ async def analyze_uploaded_file(
     )
 
     # Process
-    from .services.gemini_service import get_gemini_service
+    from services.gemini_service import get_gemini_service
 
     try:
         service = get_gemini_service()
@@ -562,7 +562,7 @@ async def list_tasks(limit: int = Query(default=50, le=100)):
 @app.post("/api/geocode", response_model=Optional[GeocodingResult], tags=["Geocoding"])
 async def geocode_location(request: GeocodingRequest):
     """Geocode a single location name to coordinates"""
-    from .services.geocoding_service import get_geocoding_service
+    from services.geocoding_service import get_geocoding_service
     
     service = get_geocoding_service()
     result = await service.geocode_location(request.location_name, request.context)
@@ -576,7 +576,7 @@ async def geocode_location(request: GeocodingRequest):
 @app.post("/api/geocode/batch", response_model=BatchGeocodingResult, tags=["Geocoding"])
 async def batch_geocode(request: BatchGeocodingRequest):
     """Geocode multiple locations at once"""
-    from .services.geocoding_service import get_geocoding_service
+    from services.geocoding_service import get_geocoding_service
     
     service = get_geocoding_service()
     return await service.batch_geocode(request.locations, request.context)
@@ -589,7 +589,7 @@ async def batch_geocode(request: BatchGeocodingRequest):
 @app.post("/api/ner", response_model=NERResult, tags=["NER"])
 async def extract_entities(request: NERRequest):
     """Extract named entities from text"""
-    from .services.ner_service import get_ner_service
+    from services.ner_service import get_ner_service
     
     service = get_ner_service()
     return service.extract_entities(request.text, request.labels)
@@ -598,7 +598,7 @@ async def extract_entities(request: NERRequest):
 @app.post("/api/ner/locations", tags=["NER"])
 async def extract_locations(text: str = Form(...)):
     """Extract only location entities from text"""
-    from .services.ner_service import get_ner_service
+    from services.ner_service import get_ner_service
     
     service = get_ner_service()
     locations = service.extract_locations(text)
@@ -610,8 +610,14 @@ async def extract_locations(text: str = Form(...)):
 # IMPORT AND INCLUDE ROUTERS
 # ============================================================================
 
-from .monitoring import router as monitoring_router
+from monitoring import router as monitoring_router
 app.include_router(monitoring_router, prefix="/api")
+
+from routes.disaster_routes import router as disaster_router
+app.include_router(disaster_router, prefix="/api")
+
+from routes.realtime_routes import router as realtime_router
+app.include_router(realtime_router, prefix="/api")
 
 # ============================================================================
 # RUN SERVER

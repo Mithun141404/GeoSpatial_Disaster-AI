@@ -7,6 +7,7 @@ import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings
 from typing import List, Optional
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -30,6 +31,26 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
     ]
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = True
+        extra = "ignore"
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",")]
+        return v
+
+    @field_validator("ALLOWED_EXTENSIONS", mode="before")
+    @classmethod
+    def parse_allowed_extensions(cls, v):
+        if isinstance(v, str):
+            return [ext.strip() for ext in v.split(",")]
+        return v
     
     # Google Gemini
     GEMINI_API_KEY: Optional[str] = None
@@ -64,6 +85,27 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    # SMTP for Email Alerts (optional)
+    SMTP_SERVER: Optional[str] = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    SMTP_FROM_EMAIL: Optional[str] = "alerts@disasterai.com"
+
+    # Alert Webhooks
+    ALERT_WEBHOOK_URLS: List[str] = []
+
+    # Real-time monitoring settings
+    REAL_TIME_MONITORING_ENABLED: bool = True
+    ALERT_SUBSCRIPTION_TTL_DAYS: int = 30
+
+    @field_validator("ALERT_WEBHOOK_URLS", mode="before")
+    @classmethod
+    def parse_webhook_urls(cls, v):
+        if isinstance(v, str):
+            return [url.strip() for url in v.split(",") if url.strip()]
+        return v if v is not None else []
     
     class Config:
         env_file = ".env"

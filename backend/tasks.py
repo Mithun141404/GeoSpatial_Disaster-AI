@@ -12,15 +12,15 @@ import uuid
 import time
 import json
 
-from .models import (
+from models import (
     AnalysisRequest,
     AnalysisResult,
     TaskStatus,
     TaskInfo,
     TaskDB
 )
-from .config import settings
-from .db import (
+from config import settings
+from db import (
     create_task_in_db,
     get_task_from_db,
     update_task_in_db,
@@ -325,7 +325,7 @@ class TaskProcessor:
             self.store.update_task(task_id, status=TaskStatus.PROCESSING, progress=10)
             
             # Import service here to avoid circular imports
-            from .services.gemini_service import get_gemini_service
+            from services.gemini_service import get_gemini_service
             
             service = get_gemini_service()
             
@@ -433,7 +433,7 @@ try:
             self.update_state(state="PROCESSING", meta={"progress": 10})
             
             # Run async analysis in sync context
-            from .services.gemini_service import get_gemini_service
+            from services.gemini_service import get_gemini_service
             service = get_gemini_service()
             
             loop = asyncio.new_event_loop()

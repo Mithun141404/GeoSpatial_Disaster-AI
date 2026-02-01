@@ -12,9 +12,9 @@ import os
 from datetime import datetime
 import asyncio
 
-from .config import settings
-from .tasks import task_store
-from .logging_config import get_logger
+from config import settings
+from tasks import task_store
+from logging_config import get_logger
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -155,7 +155,7 @@ async def detailed_health_check():
 
         # Check database connection
         try:
-            from .db import get_db_session
+            from db import get_db_session
             with get_db_session() as db:
                 db.execute("SELECT 1")
             health_checks["database_connection"] = True
