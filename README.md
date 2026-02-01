@@ -2,19 +2,222 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# 🛰️ DisasterAI - Multimodal Geospatial Intelligence
 
-This contains everything you need to run your app locally.
+> AI-powered multimodal analysis for disaster response, infrastructure monitoring, and geospatial intelligence synthesis.
 
-View your app in AI Studio: https://ai.studio/apps/temp/1
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev)
+[![Gemini](https://img.shields.io/badge/Gemini-2.0-4285F4.svg)](https://ai.google.dev)
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+## ✨ Features
 
+- **🔍 Multimodal Document Analysis** - Analyze satellite imagery, PDFs, and technical reports
+- **🗺️ Geospatial Mapping** - Automatic coordinate extraction and polygon visualization
+- **🤖 AI-Powered Insights** - Google Gemini integration for intelligent summarization
+- **📊 NER Entity Extraction** - Identify locations, organizations, and risk indicators
+- **🔄 Background Processing** - Async task queue for large document processing
+- **🌐 REST API** - Full-featured FastAPI backend with OpenAPI documentation
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+---
+
+## 🏗️ Architecture
+
+```
+disasterai/
+├── 📁 backend/                 # Python FastAPI Backend
+│   ├── main.py                 # FastAPI app & endpoints
+│   ├── models.py               # Pydantic data models
+│   ├── tasks.py                # Background task processing
+│   ├── config.py               # Configuration management
+│   ├── services/               # Business logic services
+│   │   ├── gemini_service.py   # Gemini AI integration
+│   │   ├── geocoding_service.py # Location resolution
+│   │   └── ner_service.py      # Named Entity Recognition
+│   ├── requirements.txt        # Python dependencies
+│   └── .env.example            # Environment template
+├── 📁 components/              # React UI Components
+├── App.tsx                     # Main React application
+├── types.ts                    # TypeScript type definitions
+└── package.json                # Node.js dependencies
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 18+ (for frontend)
+- **Python** 3.11+ (for backend)
+- **Gemini API Key** ([Get one here](https://ai.google.dev))
+
+### Frontend Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Set your Gemini API key in .env.local
+# GEMINI_API_KEY=your_key_here
+
+# Run the frontend
+npm run dev
+```
+
+### Backend Setup
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and add your GEMINI_API_KEY
+
+# Run the backend server
+python run.py
+
+# OR use uvicorn directly:
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+---
+
+## 📡 API Endpoints
+
+Once the backend is running, visit **http://localhost:8000/docs** for interactive API documentation.
+
+### Core Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | API info |
+| `GET` | `/health` | Health check & service status |
+| `GET` | `/api/health-detailed` | Detailed health check with service verifications |
+| `GET` | `/api/metrics/system` | System resource metrics |
+| `GET` | `/api/metrics/tasks` | Task-related metrics |
+| `GET` | `/api/metrics/performance` | Comprehensive performance metrics |
+| `POST` | `/api/analyze` | Synchronous document analysis |
+| `POST` | `/api/analyze/async` | Async analysis (returns task ID) |
+| `POST` | `/api/analyze/upload` | Upload & analyze file |
+| `GET` | `/api/tasks/{id}` | Get task status & results |
+| `POST` | `/api/geocode` | Geocode location name |
+| `POST` | `/api/ner` | Extract named entities |
+
+### Example: Analyze Document
+
+```bash
+curl -X POST "http://localhost:8000/api/analyze" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_data": "BASE64_ENCODED_IMAGE",
+    "mime_type": "image/png",
+    "analysis_mode": "comprehensive"
+  }'
+```
+
+### Example: Extract Entities
+
+```bash
+curl -X POST "http://localhost:8000/api/ner" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Critical infrastructure damage reported in Chennai Terminal. LogiCorp dispatching emergency response team to Bangalore Hub."
+  }'
+```
+
+---
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GEMINI_API_KEY` | Google Gemini API key | Required |
+| `GEMINI_MODEL` | Model to use | `gemini-2.0-flash` |
+| `PORT` | Server port | `8000` |
+| `DEBUG` | Enable debug mode | `false` |
+| `CORS_ORIGINS` | Allowed origins | `localhost:5173,3000` |
+| `MAX_FILE_SIZE_MB` | Max upload size | `50` |
+| `CACHE_ENABLED` | Enable response caching | `true` |
+| `DATABASE_URL` | Database connection string | `sqlite+aiosqlite:///./disasterai.db` |
+| `LOG_LEVEL` | Logging level | `INFO` |
+| `TASK_TIMEOUT` | Task processing timeout (seconds) | `300` |
+
+---
+
+## 🔮 Technology Stack
+
+### Backend
+- **FastAPI** - High-performance async API framework
+- **Pydantic** - Data validation & settings management
+- **Google GenAI** - Gemini multimodal AI
+- **GeoPy** - Geocoding with Nominatim
+- **Tenacity** - Retry logic for resilience
+
+### Backend Enhancements
+- **Persistent Task Storage** - Database-backed task management with SQLAlchemy
+- **Comprehensive Logging** - Structured logging with JSON format and request tracing
+- **Enhanced Error Handling** - Detailed error reporting and graceful fallbacks
+- **Performance Monitoring** - Real-time metrics for system resources and task processing
+- **Health Checks** - Detailed service availability verification
+- **Security & Validation** - Enhanced input validation and secure coding practices
+
+### Frontend
+- **React 19** - Modern UI framework
+- **Vite** - Next-gen build tool
+- **Framer Motion** - Fluid animations
+- **Leaflet** - Interactive maps
+- **Lucide** - Beautiful icons
+
+---
+
+## 📦 Project Status
+
+| Component | Status |
+|-----------|--------|
+| Frontend UI | ✅ Complete |
+| Backend API | ✅ Complete |
+| Gemini Integration | ✅ Complete |
+| Geocoding Service | ✅ Complete |
+| NER Service | ✅ Complete |
+| Task Queue | ✅ Complete |
+| Database Persistence | ✅ Complete |
+| Logging & Monitoring | ✅ Complete |
+| Production Deploy | 🔄 Planned |
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
+
+---
+
+<div align="center">
+  <strong>Built with 💙 using AI-powered geospatial analysis</strong>
+</div>
